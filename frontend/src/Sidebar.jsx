@@ -5,7 +5,9 @@ const menuItems = [
   { id: 1, label: "Overview", icon: "📊", href: "/" },
   { id: 2, label: "Branches", icon: "📈", href: "/branches" },
   { id: 3, label: "Sales Reps", icon: "👥", href: "/sales-reps" },
-  { id: 4, label: "Lead Aging", icon: "⏱️", href: "/lead-aging" },
+  {id:4,label:"Forecast",icon:"⏱️",href:"/sales-forecast"},
+  {id:5,label:"Leader Board",icon:"⏱️",href:"/leader-board"},
+  {id:6,label:"Deliveries",icon:"⏱️",href:"/deliveries"},
 ];
 
 export default function Sidebar({ isCollapsed, setIsCollapsed }) {
@@ -47,17 +49,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <div className="user-info">
-          <div className="user-avatar" aria-hidden="true">👤</div>
-          {!isCollapsed && (
-            <div className="user-details">
-              <p className="user-name">Profile</p>
-              <p className="user-status">Active</p>
-            </div>
-          )}
-        </div>
-      </div>
+
     </aside>
   );
 }

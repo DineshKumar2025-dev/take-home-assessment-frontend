@@ -8,7 +8,9 @@ import BranchDetail from "./components/BranchDetail";
 import SalesReps from "./components/SalesReps";
 import LeadAging from "./components/LeadAging";
 import SalesRepDetails from "./components/SalesRepDetails";
-
+import SalesForecast from "./components/SalesForcast";
+import LeaderBoard from "./components/LeaderBoard";
+import DeliveryDelay from "./components/DeliveryDelay";
 import "./App.css";
 
 export default function App() {
@@ -30,6 +32,9 @@ export default function App() {
           <Route path="/sales-reps" element={<SalesReps />} />
           <Route path="/sales-reps/:repId" element={<SalesRepDetails />} />
           <Route path="/lead-aging" element={<LeadAging />} />
+          <Route path="/sales-forecast" element={<SalesForecast />} />
+          <Route path="/leader-board" element={<LeaderBoard />} />
+          <Route path="/deliveries" element={<DeliveryDelay />} />
         </Routes>
       </main>
     </div>

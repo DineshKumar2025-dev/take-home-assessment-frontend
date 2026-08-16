@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend, ComposedChart,
 } from "recharts";
 import { API_URL } from "../config.js";
+import TimeRangeSelector from "./TimeRangeSelector.jsx";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -43,9 +44,11 @@ function OverView() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("Jun-Dec");
 
   useEffect(() => {
-    fetch(`${API_URL}api/dashboard/overview`)
+    setLoading(true);
+    fetch(`${API_URL}api/dashboard/overview?time_range=${selectedRange}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
@@ -53,7 +56,7 @@ function OverView() {
       .then((d) => setData(d))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedRange]);
 
   if (loading) {
     return (
@@ -70,11 +73,28 @@ function OverView() {
 
   const { totals, dec_target_gap, stale_leads, monthly_trend, lead_sources, lost_reasons, branch_attainment } = data;
 
+  const getDateRangeLabel = () => {
+    const labels = {
+      "all": "All time",
+      "q3-2025": "Q3 2025 (Jul – Sep)",
+      "q4-2025": "Q4 2025 (Oct – Dec)",
+      "month-2025-06": "Jun 2025",
+      "month-2025-07": "Jul 2025",
+      "month-2025-08": "Aug 2025",
+      "month-2025-09": "Sep 2025",
+      "month-2025-10": "Oct 2025",
+      "month-2025-11": "Nov 2025",
+      "month-2025-12": "Dec 2025",
+    };
+    return labels[selectedRange] || "Jun – Dec 2025";
+  };
+
   return (
     <div>
       <div className="mb-4">
         <h1 className="h4 mb-1">Dashboard</h1>
-        <p className="text-muted small mb-0">Jun – Dec 2025 · company-wide</p>
+        <p className="text-muted small mb-0">{getDateRangeLabel()} · company-wide</p>
+        <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       </div>
 
       {/* Vital signs */}
