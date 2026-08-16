@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { API_URL } from "../config.js";
 
 function formatInr(value) {
@@ -118,7 +119,7 @@ function SalesReps() {
                 <tr key={r.rep_id}>
                   <td className="fw-medium">
                     <Link to={`/sales-reps/${r.rep_id}`} className="text-decoration-none fw-medium">
-                      {r.name}
+                      {r.name},{r.rep_id}
                     </Link>
                   </td>
                   <td className="text-muted">{r.branch_name}</td>

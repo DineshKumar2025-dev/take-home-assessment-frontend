@@ -28,7 +28,7 @@ export default function App() {
           <Route path="/branches" element={<Branches />} />
           <Route path="/branches/:branchId" element={<BranchDetail />} />
           <Route path="/sales-reps" element={<SalesReps />} />
-          <Route path="/sales-reps/:salesrepsID" element={SalesRepDetails}/>
+          <Route path="/sales-reps/:repId" element={<SalesRepDetails />} />
           <Route path="/lead-aging" element={<LeadAging />} />
         </Routes>
       </main>
