@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -37,11 +38,15 @@ function LeadAging() {
   const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("all");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_URL}api/lead-aging`)
+
+    const query = selectedRange === "all" ? "" : `?range=${selectedRange}`;
+
+    fetch(`${API_URL}api/lead-aging${query}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
@@ -49,7 +54,7 @@ function LeadAging() {
       .then((d) => setData(d))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedRange]);
 
   const { total_active_leads, stale_count, buckets, branch_breakdown, leads } = data;
   const staleLeadsList = leads.filter((l) => l.days_stale >= 7);
@@ -71,13 +76,7 @@ function LeadAging() {
         </p>
       </div>
 
-      {oldest && (
-        <div className="alert alert-warning mb-4">
-          ⚠ <strong>{stale_count} leads</strong> haven't been contacted in 7+ days.
-          Oldest: <strong>{oldest.customer_name}</strong> at {oldest.branch_name}
-          ({oldest.days_stale} days, {oldest.rep_name}).
-        </div>
-      )}
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
 
       <div className="row g-4 mb-4">
         <div className="col-lg-6">

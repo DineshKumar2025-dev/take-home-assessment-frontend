@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../config.js";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -85,11 +86,15 @@ function SalesForecast() {
   const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("all");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_URL}api/forecast`)
+
+    const query = selectedRange === "all" ? "" : `?range=${selectedRange}`;
+
+    fetch(`${API_URL}api/forecast${query}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
@@ -97,7 +102,7 @@ function SalesForecast() {
       .then((d) => setData(d))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedRange]);
 
   const criticalWarnings = data.branches.filter((b) => b.warning);
 
@@ -118,6 +123,8 @@ function SalesForecast() {
             : `${data.period_start} to ${data.period_end} · Day ${data.days_elapsed} of ${data.total_period_days} · ${data.days_left} days left`}
         </p>
       </div>
+
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
 
       {criticalWarnings.length > 0 && (
         <div className="alert alert-warning mb-4">

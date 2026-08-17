@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -71,11 +72,15 @@ function LeaderBoard() {
   const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("all");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_URL}api/leaderboard`)
+
+    const query = selectedRange === "all" ? "" : `?range=${selectedRange}`;
+
+    fetch(`${API_URL}api/leaderboard${query}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
@@ -83,7 +88,7 @@ function LeaderBoard() {
       .then((d) => setData(d))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedRange]);
 
   const { top_reps, bottom_reps, branch_ranking } = data;
 
@@ -100,6 +105,8 @@ function LeaderBoard() {
         <h1 className="h4 mb-1">Leaderboard</h1>
         <p className="text-muted small mb-0">Ranked by revenue, Jun – Dec 2025</p>
       </div>
+
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
 
       <div className="row g-4 mb-4">
         <div className="col-lg-6">

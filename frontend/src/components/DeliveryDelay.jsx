@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from "recharts";
 import { API_URL } from "../config.js";
+import TimeRangeSelector from "./TimeRangeSelector";
 
 function formatPct(value) {
   return value === null || value === undefined ? "—" : `${value.toFixed(0)}%`;
@@ -46,11 +47,15 @@ function DeliveryDelay() {
   const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("all");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_URL}api/deliveries`)
+
+    const query = selectedRange === "all" ? "" : `?range=${selectedRange}`;
+
+    fetch(`${API_URL}api/deliveries${query}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
@@ -58,7 +63,7 @@ function DeliveryDelay() {
       .then((d) => setData(d))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedRange]);
 
   const { summary, delay_reasons, branch_comparison } = data;
   const pieData = [
@@ -82,6 +87,8 @@ function DeliveryDelay() {
           {loading ? "Loading…" : `On-time performance across ${summary.total_deliveries} deliveries`}
         </p>
       </div>
+
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
 
       <div className="row g-3 mb-4">
         <StatCard
