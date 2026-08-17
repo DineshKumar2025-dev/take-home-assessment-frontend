@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Components.css";
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
+import ExportButtons from "./ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -29,6 +30,7 @@ function Branches() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
+  const pdfRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
@@ -48,6 +50,19 @@ function Branches() {
 
   const { branches } = data;
 
+  const csvRows = branches.map((b) => ({
+    Branch: b.name,
+    City: b.city,
+    Leads: b.total_leads,
+    Delivered: b.delivered,
+    Revenue: b.actual_revenue,
+    "Conversion %": b.conversion_rate_pct,
+    "Actual Units": b.actual_units,
+    "Target Units": b.target_units,
+    "Attainment %": b.revenue_attainment_pct,
+    "Avg Days To Deliver": b.avg_days_to_deliver,
+  }));
+
   return (
     <div>
       {error && (
@@ -57,53 +72,66 @@ function Branches() {
         </div>
       )}
 
-      <h1 className="h4 mb-3">Branches</h1>
-      <p className="text-muted small">Company-wide branch performance.</p>
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <h1 className="h4 mb-3">Branches</h1>
+          <p className="text-muted small">Company-wide branch performance.</p>
+        </div>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename={`branches-${selectedRange}.csv`}
+          pdfRef={pdfRef}
+          pdfFilename={`branches-${selectedRange}.pdf`}
+          pdfTitle="Branch Performance"
+        />
+      </div>
 
       <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
 
-      <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-light">
-            <tr>
-              <th>Branch</th>
-              <th>City</th>
-              <th className="text-end">Leads</th>
-              <th className="text-end">Delivered</th>
-              <th className="text-end">Revenue</th>
-              <th className="text-end">Conv %</th>
-              <th className="text-end">Target (units)</th>
-              <th className="text-end">Attain</th>
-              <th className="text-end">Avg delay</th>
-            </tr>
-          </thead>
-          <tbody>
-            {branches.length === 0 && (
+      <div ref={pdfRef}>
+        <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
               <tr>
-                <td colSpan={9} className="text-muted text-center py-5">
-                  {loading ? "Loading branches…" : "No branch data for this period."}
-                </td>
+                <th>Branch</th>
+                <th>City</th>
+                <th className="text-end">Leads</th>
+                <th className="text-end">Delivered</th>
+                <th className="text-end">Revenue</th>
+                <th className="text-end">Conv %</th>
+                <th className="text-end">Target (units)</th>
+                <th className="text-end">Attain</th>
+                <th className="text-end">Avg delay</th>
               </tr>
-            )}
-            {branches.map((b) => (
-              <tr key={b.branch_id}>
-                <td>
-                  <Link to={`/branches/${b.branch_id}`} className="text-decoration-none fw-medium">
-                    {b.name}
-                  </Link>
-                </td>
-                <td className="text-muted">{b.city}</td>
-                <td className="text-end">{b.total_leads}</td>
-                <td className="text-end">{b.delivered}</td>
-                <td className="text-end">{formatInr(b.actual_revenue)}</td>
-                <td className="text-end">{formatPct(b.conversion_rate_pct)}</td>
-                <td className="text-end">{b.actual_units}/{b.target_units}</td>
-                <td className="text-end"><AttainmentBadge pct={b.revenue_attainment_pct} /></td>
-                <td className="text-end">{b.avg_days_to_deliver !== null ? `${b.avg_days_to_deliver}d` : "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {branches.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="text-muted text-center py-5">
+                    {loading ? "Loading branches…" : "No branch data for this period."}
+                  </td>
+                </tr>
+              )}
+              {branches.map((b) => (
+                <tr key={b.branch_id}>
+                  <td>
+                    <Link to={`/branches/${b.branch_id}`} className="text-decoration-none fw-medium">
+                      {b.name}
+                    </Link>
+                  </td>
+                  <td className="text-muted">{b.city}</td>
+                  <td className="text-end">{b.total_leads}</td>
+                  <td className="text-end">{b.delivered}</td>
+                  <td className="text-end">{formatInr(b.actual_revenue)}</td>
+                  <td className="text-end">{formatPct(b.conversion_rate_pct)}</td>
+                  <td className="text-end">{b.actual_units}/{b.target_units}</td>
+                  <td className="text-end"><AttainmentBadge pct={b.revenue_attainment_pct} /></td>
+                  <td className="text-end">{b.avg_days_to_deliver !== null ? `${b.avg_days_to_deliver}d` : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

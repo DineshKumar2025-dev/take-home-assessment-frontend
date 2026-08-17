@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config.js";
+import ExportButtons from "./ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -26,6 +27,7 @@ function SalesReps() {
   const [reps, setReps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const pdfRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API_URL}api/branches/list`)
@@ -53,6 +55,16 @@ function SalesReps() {
       .finally(() => setLoading(false));
   }, [selectedBranch]);
 
+  const csvRows = reps.map((r) => ({
+    Rep: r.name,
+    Branch: r.branch_name,
+    Role: r.role,
+    Leads: r.total_leads,
+    Delivered: r.delivered,
+    Revenue: r.revenue,
+    "Conversion %": r.conversion_rate_pct,
+  }));
+
   return (
     <div>
       {error && (
@@ -68,56 +80,67 @@ function SalesReps() {
           <p className="text-muted small mb-0">Performance by representative.</p>
         </div>
 
-        <select
-          className="form-select form-select-sm w-auto"
-          value={selectedBranch}
-          onChange={(e) => setSelectedBranch(e.target.value)}
-        >
-          <option value="all">All branches</option>
-          {branches.map((b) => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          <select
+            className="form-select form-select-sm w-auto"
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value)}
+          >
+            <option value="all">All branches</option>
+            {branches.map((b) => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </select>
+          <ExportButtons
+            csvData={csvRows}
+            csvFilename={`sales-reps-${selectedBranch}.csv`}
+            pdfRef={pdfRef}
+            pdfFilename={`sales-reps-${selectedBranch}.pdf`}
+            pdfTitle="Sales Reps Performance"
+          />
+        </div>
       </div>
 
-      <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-light">
-            <tr>
-              <th>Rep</th>
-              <th>Branch</th>
-              <th>Role</th>
-              <th className="text-end">Leads</th>
-              <th className="text-end">Delivered</th>
-              <th className="text-end">Revenue</th>
-              <th className="text-end">Conv %</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reps.length === 0 && (
+      <div ref={pdfRef}>
+        <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
               <tr>
-                <td colSpan={7} className="text-muted text-center py-5">
-                  {loading ? "Loading sales reps…" : "No reps found for this branch."}
-                </td>
+                <th>Rep</th>
+                <th>Branch</th>
+                <th>Role</th>
+                <th className="text-end">Leads</th>
+                <th className="text-end">Delivered</th>
+                <th className="text-end">Revenue</th>
+                <th className="text-end">Conv %</th>
               </tr>
-            )}
-            {reps.map((r) => (
-              <tr key={r.rep_id}>
-                <td className="fw-medium">
-                  <Link to={`/sales-reps/${r.rep_id}`} className="text-decoration-none fw-medium">
-                    {r.name}
-                  </Link>
-                </td>
-                <td className="text-muted">{r.branch_name}</td>
-                <td className="text-muted">{r.role}</td>
-                <td className="text-end">{r.total_leads}</td>
-                <td className="text-end">{r.delivered}</td>
-                <td className="text-end">{formatInr(r.revenue)}</td>
-                <td className="text-end"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reps.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-muted text-center py-5">
+                    {loading ? "Loading sales reps…" : "No reps found for this branch."}
+                  </td>
+                </tr>
+              )}
+              {reps.map((r) => (
+                <tr key={r.rep_id}>
+                  <td className="fw-medium">
+                    <Link to={`/sales-reps/${r.rep_id}`} className="text-decoration-none fw-medium">
+                      {r.name}
+                    </Link>
+                  </td>
+                  <td className="text-muted">{r.branch_name}</td>
+                  <td className="text-muted">{r.role}</td>
+                  <td className="text-end">{r.total_leads}</td>
+                  <td className="text-end">{r.delivered}</td>
+                  <td className="text-end">{formatInr(r.revenue)}</td>
+                  <td className="text-start"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

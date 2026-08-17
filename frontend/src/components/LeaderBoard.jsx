@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
+import ExportButtons from "./ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -73,7 +74,7 @@ function LeaderBoard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
-
+  const pdfRef = useRef(null);
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -91,7 +92,10 @@ function LeaderBoard() {
   }, [selectedRange]);
 
   const { top_reps, bottom_reps, branch_ranking } = data;
-
+  const csvRows = [
+    ...top_reps.map((r) => ({ Category: "Top", Rank: r.rank, Rep: r.name, Branch: r.branch_name, Revenue: r.revenue, "Conv %": r.conversion_rate_pct })),
+    ...bottom_reps.map((r) => ({ Category: "Bottom", Rank: r.rank, Rep: r.name, Branch: r.branch_name, Revenue: r.revenue, "Conv %": r.conversion_rate_pct })),
+  ];
   return (
     <div>
       {error && (
@@ -107,7 +111,20 @@ function LeaderBoard() {
       </div>
 
       <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
-
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+          <h1 className="h4 mb-1">Leaderboard</h1>
+          <p className="text-muted small mb-0">Ranked by revenue, Jun – Dec 2025</p>
+        </div>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename="leaderboard.csv"
+          pdfRef={pdfRef}
+          pdfFilename="leaderboard.pdf"
+          pdfTitle="Leaderboard"
+        />
+      </div>
+      <div ref={pdfRef}>
       <div className="row g-4 mb-4">
         <div className="col-lg-6">
           <div className="border rounded p-4 bg-white h-100">
@@ -177,6 +194,7 @@ function LeaderBoard() {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 }

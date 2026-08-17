@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../config.js";
 import {
@@ -6,6 +6,7 @@ import {
   LineChart, Line, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import TimeRangeSelector from "./TimeRangeSelector";
+import ExportButtons from "./ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
@@ -34,6 +35,7 @@ export default function BranchDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
+  const pdfRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
@@ -53,6 +55,15 @@ export default function BranchDetail() {
 
   const { branch, sales_reps, lead_sources, monthly_trend, lost_reasons, summary } = data;
 
+  const csvRows = sales_reps.map((r) => ({
+    Rep: r.name,
+    Role: r.role,
+    Leads: r.total_leads,
+    Delivered: r.delivered,
+    "Conversion %": r.conversion_rate_pct,
+    Revenue: r.revenue,
+  }));
+
   return (
     <div className="p-3">
       {error && (
@@ -62,123 +73,134 @@ export default function BranchDetail() {
         </div>
       )}
 
-      <button className="btn btn-link p-0 mb-3" onClick={() => navigate(-1)}>← Back</button>
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <button className="btn btn-link p-0" onClick={() => navigate(-1)}>← Back</button>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename={`branch-${branchId}-reps-${selectedRange}.csv`}
+          pdfRef={pdfRef}
+          pdfFilename={`branch-${branchId}-${selectedRange}.pdf`}
+          pdfTitle={branch.name ? `${branch.name} — Branch Report` : "Branch Report"}
+        />
+      </div>
 
-      <div className="border rounded p-4 bg-white mb-4">
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-          <div>
-            <div className="text-muted small text-uppercase">Branch</div>
-            <h2 className="h3 mb-0">{branch.name || (loading ? "Loading…" : "—")}</h2>
-            <div className="text-muted">{branch.city || ""}</div>
-          </div>
-          <Link to="/branches" className="btn btn-outline-dark btn-sm">View all branches</Link>
-        </div>
-        <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
-        <div className="d-flex flex-row gap-3 flex-wrap">
-          {Object.entries(summary).length === 0 && !loading ? null : Object.entries(summary).map(([key, value]) => (
-            <div key={key} className="card p-3">
-              <label className="text-muted">{key.replaceAll("_", " ")}</label>
-              <h4>{value ?? "—"}</h4>
+      <div ref={pdfRef}>
+        <div className="border rounded p-4 bg-white mb-4">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <div className="text-muted small text-uppercase">Branch</div>
+              <h2 className="h3 mb-0">{branch.name || (loading ? "Loading…" : "—")}</h2>
+              <div className="text-muted">{branch.city || ""}</div>
             </div>
-          ))}
+            <Link to="/branches" className="btn btn-outline-dark btn-sm">View all branches</Link>
+          </div>
+          <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
+          <div className="d-flex flex-row gap-3 flex-wrap">
+            {Object.entries(summary).map(([key, value]) => (
+              <div key={key} className="card p-3">
+                <label className="text-muted">{key.replaceAll("_", " ")}</label>
+                <h4>{value ?? "—"}</h4>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="border rounded p-4 bg-white mb-4">
-        <h3 className="h6 mb-3">Sales reps</h3>
-        <div className="table-responsive">
-          <table className="table table-sm table-hover align-middle mb-0">
-            <thead className="table-light">
-              <tr>
-                <th>Name</th><th>Role</th>
-                <th className="text-end">Leads</th>
-                <th className="text-end">Delivered</th>
-                <th className="text-end">Conv %</th>
-                <th className="text-end">Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sales_reps.length === 0 && (
-                <tr><td colSpan={6} className="text-muted text-center py-4">{loading ? "Loading…" : "No reps found."}</td></tr>
-              )}
-              {sales_reps.map((r) => (
-                <tr key={r.rep_id}>
-                  <td>{r.name}</td>
-                  <td className="text-muted">{r.role}</td>
-                  <td className="text-end">{r.total_leads}</td>
-                  <td className="text-end">{r.delivered}</td>
-                  <td className="text-end">{r.conversion_rate_pct ?? "—"}%</td>
-                  <td className="text-end">{formatInr(r.revenue)}</td>
+        <div className="border rounded p-4 bg-white mb-4">
+          <h3 className="h6 mb-3">Sales reps</h3>
+          <div className="table-responsive">
+            <table className="table table-sm table-hover align-middle mb-0">
+              <thead className="table-light">
+                <tr>
+                  <th>Name</th><th>Role</th>
+                  <th className="text-end">Leads</th>
+                  <th className="text-end">Delivered</th>
+                  <th className="text-end">Conv %</th>
+                  <th className="text-end">Revenue</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="row g-4 mb-4">
-        <div className="col-lg-6">
-          <div className="border rounded p-4 bg-white h-100">
-            <h3 className="h6 mb-3">Monthly trend</h3>
-            {monthly_trend.length === 0 ? (
-              <div className="text-muted text-center py-5">{loading ? "Loading…" : "No data yet."}</div>
-            ) : (
-              <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={monthly_trend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" fontSize={12} />
-                  <YAxis fontSize={12} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="total_leads" stroke="#0d6efd" name="Leads" />
-                  <Line type="monotone" dataKey="delivered" stroke="#20c997" name="Delivered" />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
+              </thead>
+              <tbody>
+                {sales_reps.length === 0 && (
+                  <tr><td colSpan={6} className="text-muted text-center py-4">{loading ? "Loading…" : "No reps found."}</td></tr>
+                )}
+                {sales_reps.map((r) => (
+                  <tr key={r.rep_id}>
+                    <td>{r.name}</td>
+                    <td className="text-muted">{r.role}</td>
+                    <td className="text-end">{r.total_leads}</td>
+                    <td className="text-end">{r.delivered}</td>
+                    <td className="text-end">{r.conversion_rate_pct ?? "—"}%</td>
+                    <td className="text-end">{formatInr(r.revenue)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="col-lg-6">
-          <div className="border rounded p-4 bg-white h-100">
-            <h3 className="h6 mb-3">Lead sources</h3>
-            {lead_sources.length === 0 ? (
-              <div className="text-muted text-center py-5">{loading ? "Loading…" : "No leads yet."}</div>
-            ) : (
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={lead_sources} dataKey="total_leads" nameKey="source"
-                    cx="50%" cy="50%" outerRadius={90}
-                    label={(entry) => entry.source}
-                  >
-                    {lead_sources.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
+        <div className="row g-4 mb-4">
+          <div className="col-lg-6">
+            <div className="border rounded p-4 bg-white h-100">
+              <h3 className="h6 mb-3">Monthly trend</h3>
+              {monthly_trend.length === 0 ? (
+                <div className="text-muted text-center py-5">{loading ? "Loading…" : "No data yet."}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={monthly_trend}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" fontSize={12} />
+                    <YAxis fontSize={12} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="total_leads" stroke="#0d6efd" name="Leads" />
+                    <Line type="monotone" dataKey="delivered" stroke="#20c997" name="Delivered" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="col-lg-6">
-          <div className="border rounded p-4 bg-white h-100">
-            <h3 className="h6 mb-3">Lost reasons</h3>
-            {lost_reasons.length === 0 ? (
-              <div className="text-muted text-center py-5">{loading ? "Loading…" : "No lost leads in this period."}</div>
-            ) : (
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={lost_reasons} dataKey="count" nameKey="reason"
-                    cx="50%" cy="50%" outerRadius={90}
-                    label={({ reason, percent }) => `${reason} ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {lost_reasons.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
+          <div className="col-lg-6">
+            <div className="border rounded p-4 bg-white h-100">
+              <h3 className="h6 mb-3">Lead sources</h3>
+              {lead_sources.length === 0 ? (
+                <div className="text-muted text-center py-5">{loading ? "Loading…" : "No leads yet."}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={lead_sources} dataKey="total_leads" nameKey="source"
+                      cx="50%" cy="50%" outerRadius={90}
+                      label={(entry) => entry.source}
+                    >
+                      {lead_sources.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          <div className="col-lg-6">
+            <div className="border rounded p-4 bg-white h-100">
+              <h3 className="h6 mb-3">Lost reasons</h3>
+              {lost_reasons.length === 0 ? (
+                <div className="text-muted text-center py-5">{loading ? "Loading…" : "No lost leads in this period."}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={lost_reasons} dataKey="count" nameKey="reason"
+                      cx="50%" cy="50%" outerRadius={90}
+                      label={({ reason, percent }) => `${reason} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {lost_reasons.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         </div>
       </div>

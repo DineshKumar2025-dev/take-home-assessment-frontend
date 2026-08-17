@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
-
+import ExportButtons from "./ExportButtons";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;
@@ -87,6 +87,7 @@ function SalesForecast() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
+  const pdfRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
@@ -105,7 +106,19 @@ function SalesForecast() {
   }, [selectedRange]);
 
   const criticalWarnings = data.branches.filter((b) => b.warning);
-
+  const csvRows = data.branches.map((b) => ({
+    Branch: b.name,
+    City: b.city,
+    "Target Units": b.target_units,
+    "Actual Units": b.actual_units,
+    "Projected Units": b.projected_units,
+    "Target Revenue": b.target_revenue,
+    "Actual Revenue": b.actual_revenue,
+    "Projected Revenue": b.projected_revenue,
+    "Attainment %": b.revenue_attainment_pct,
+    Status: b.status,
+    Warning: b.warning || "",
+  }));
   return (
     <div>
       {error && (
@@ -125,7 +138,24 @@ function SalesForecast() {
       </div>
 
       <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
-
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+          <h1 className="h4 mb-1">Sales Forecast</h1>
+          <p className="text-muted small mb-0">
+            {loading && data.branches.length === 0
+              ? "Loading…"
+              : `${data.period_start} to ${data.period_end} · Day ${data.days_elapsed} of ${data.total_period_days} · ${data.days_left} days left`}
+          </p>
+        </div>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename="sales-forecast.csv"
+          pdfRef={pdfRef}
+          pdfFilename="sales-forecast.pdf"
+          pdfTitle="Sales Forecast"
+        />
+      </div>
+      <div ref={pdfRef}>
       {criticalWarnings.length > 0 && (
         <div className="alert alert-warning mb-4">
           <strong>{criticalWarnings.length} branch{criticalWarnings.length > 1 ? "es" : ""}</strong> need attention this period.
@@ -141,6 +171,7 @@ function SalesForecast() {
           data.branches.map((b) => <BranchForecastCard key={b.branch_id} b={b} />)
         )}
       </div>
+    </div>
     </div>
   );
 }

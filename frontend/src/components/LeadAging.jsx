@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
-
+import ExportButtons from "./ExportButtons";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;
@@ -39,7 +39,7 @@ function LeadAging() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
-
+  const pdfRef = useRef(null);
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -51,7 +51,10 @@ function LeadAging() {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
       })
-      .then((d) => setData(d))
+      .then((d) => {
+        console.log(d);
+        setData(d)
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [selectedRange]);
@@ -59,7 +62,15 @@ function LeadAging() {
   const { total_active_leads, stale_count, buckets, branch_breakdown, leads } = data;
   const staleLeadsList = leads.filter((l) => l.days_stale >= 7);
   const oldest = staleLeadsList[0];
-
+  const csvRows = staleLeadsList.map((l) => ({
+    Customer: l.customer_name,
+    Branch: l.branch_name,
+    Rep: l.rep_name,
+    Model: l.model_interested,
+    "Last Activity": l.last_activity_at,
+    "Deal Value": l.deal_value,
+    "Days Stale": l.days_stale,
+  }));
   return (
     <div>
       {error && (
@@ -77,7 +88,22 @@ function LeadAging() {
       </div>
 
       <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
-
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+          <h1 className="h4 mb-1">Lead Aging</h1>
+          <p className="text-muted small mb-0">
+            {loading ? "Loading…" : `${total_active_leads} active leads · ${stale_count} going cold (7+ days no activity)`}
+          </p>
+        </div>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename="lead-aging.csv"
+          pdfRef={pdfRef}
+          pdfFilename="lead-aging.pdf"
+          pdfTitle="Lead Aging Report"
+        />
+      </div>
+      <div ref={pdfRef}>
       <div className="row g-4 mb-4">
         <div className="col-lg-6">
           <div className="border rounded p-4 bg-white h-100">
@@ -143,7 +169,9 @@ function LeadAging() {
                     <td className="text-muted">
                       <Link to={`/branches/${l.branch_id}`} className="text-decoration-none">{l.branch_name}</Link>
                     </td>
-                    <td className="text-muted">{l.rep_name}</td>
+                    <td className="text-muted">
+                      <Link to={`/sales-reps/${l.rep_id}`} className="text-decoration-none">{l.rep_name}</Link>
+                    </td>
                     <td className="text-muted">{l.model_interested}</td>
                     <td className="text-muted">{formatDate(l.last_activity_at)}</td>
                     <td className="text-end">{formatInr(l.deal_value)}</td>
@@ -157,6 +185,7 @@ function LeadAging() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

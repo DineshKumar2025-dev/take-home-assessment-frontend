@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
@@ -6,7 +6,7 @@ import {
 } from "recharts";
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
-
+import ExportButtons from "./ExportButtons";
 function formatPct(value) {
   return value === null || value === undefined ? "—" : `${value.toFixed(0)}%`;
 }
@@ -48,7 +48,7 @@ function DeliveryDelay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRange, setSelectedRange] = useState("all");
-
+  const pdfRef = useRef(null);
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -71,7 +71,15 @@ function DeliveryDelay() {
     { name: "Late", value: summary.late },
   ];
   const hasDeliveries = summary.total_deliveries > 0;
-
+  const csvRows = branch_comparison.map((b) => ({
+    Branch: b.name,
+    City: b.city,
+    "Total Deliveries": b.total_deliveries,
+    "On Time": b.on_time,
+    Late: b.late,
+    "On Time %": b.on_time_pct,
+    "Avg Days": b.avg_days_to_deliver,
+  }));
   return (
     <div>
       {error && (
@@ -89,7 +97,22 @@ function DeliveryDelay() {
       </div>
 
       <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
-
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+          <h1 className="h4 mb-1">Delivery &amp; Delay</h1>
+          <p className="text-muted small mb-0">
+            {loading ? "Loading…" : `On-time performance across ${summary.total_deliveries} deliveries`}
+          </p>
+        </div>
+        <ExportButtons
+          csvData={csvRows}
+          csvFilename="delivery-delay.csv"
+          pdfRef={pdfRef}
+          pdfFilename="delivery-delay.pdf"
+          pdfTitle="Delivery & Delay Report"
+        />
+      </div>
+      <div ref={pdfRef}>
       <div className="row g-3 mb-4">
         <StatCard
           label="On-time rate"
@@ -194,6 +217,7 @@ function DeliveryDelay() {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -6,3 +6,106 @@
 .table td, .table th {
   padding: 0.75rem 1rem;
 }
+
+
+.blue-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+  font-size: 14px;
+}
+
+/* Header */
+.blue-table thead {
+  background: #eff6ff;
+}
+
+.blue-table thead tr {
+  border-bottom: 1px solid #dbeafe;
+}
+
+.blue-table th {
+  padding: 15px 18px;
+  text-align: left;
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.blue-table tbody {
+  display: block;
+  height: 500px;
+  overflow-y: auto;
+}
+
+.blue-table thead,
+.blue-table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+/* Body */
+.blue-table td {
+  padding: 16px 18px;
+  color: #475569;
+  border-top: 1px solid #eef2ff;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+
+/* Hover */
+.blue-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.blue-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+/* First column */
+.blue-table td:first-child {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* Strong text */
+.blue-table td strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* Last row */
+.blue-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status */
+.blue-table td span {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .blue-table {
+    font-size: 13px;
+  }
+
+  .blue-table th,
+  .blue-table td {
+    padding: 12px 14px;
+  }
+}
