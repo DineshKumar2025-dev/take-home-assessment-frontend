@@ -8,6 +8,7 @@ const menuItems = [
   {id:4,label:"Forecast",icon:"⏱️",href:"/sales-forecast"},
   {id:5,label:"Leader Board",icon:"⏱️",href:"/leader-board"},
   {id:6,label:"Deliveries",icon:"⏱️",href:"/deliveries"},
+  {id:7,label:"Lead Aging",icon:"⏱️",href:"/lead-aging"},
 ];
 
 export default function Sidebar({ isCollapsed, setIsCollapsed }) {

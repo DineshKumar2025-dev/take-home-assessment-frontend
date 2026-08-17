@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-
 import Sidebar from "./Sidebar";
 import OverView from "./components/Overview";
 import Branches from "./components/Branches";
@@ -34,7 +33,9 @@ export default function App() {
           <Route path="/lead-aging" element={<LeadAging />} />
           <Route path="/sales-forecast" element={<SalesForecast />} />
           <Route path="/leader-board" element={<LeaderBoard />} />
+          
           <Route path="/deliveries" element={<DeliveryDelay />} />
+          <Route path="/lead-aging" element={<LeadAging />} />
         </Routes>
       </main>
     </div>

@@ -26,7 +26,6 @@ function BranchForecastCard({ b }) {
 
   return (
     <div className="col-md-6 col-xl-4">
-        
       <div className={`border rounded p-4 bg-white h-100 border-${meta.variant}`} style={{ borderWidth: "2px" }}>
         <div className="d-flex justify-content-between align-items-start mb-2">
           <div>
@@ -42,10 +41,7 @@ function BranchForecastCard({ b }) {
             <span>{formatPct(b.revenue_attainment_pct)}</span>
           </div>
           <div className="progress" style={{ height: "8px" }}>
-            <div
-              className={`progress-bar bg-${meta.variant}`}
-              style={{ width: `${revenuePct}%` }}
-            />
+            <div className={`progress-bar bg-${meta.variant}`} style={{ width: `${revenuePct}%` }} />
           </div>
           <div className="d-flex justify-content-between small text-muted mt-1">
             <span>{formatInr(b.actual_revenue)}</span>
@@ -64,28 +60,35 @@ function BranchForecastCard({ b }) {
           </div>
           <div className="col-4">
             <div className="text-muted small">Projected</div>
-            <div className={`fw-semibold ${projectedPct < 85 ? "text-danger" : "text-success"}`}>
-              {b.projected_units}u
-            </div>
+            <div className={`fw-semibold ${projectedPct < 85 ? "text-danger" : "text-success"}`}>{b.projected_units}u</div>
           </div>
         </div>
 
         {b.warning && (
-          <div className="alert alert-danger py-2 px-3 small mb-0" role="alert">
-            ⚠ {b.warning}
-          </div>
+          <div className="alert alert-danger py-2 px-3 small mb-0" role="alert">⚠ {b.warning}</div>
         )}
       </div>
     </div>
   );
 }
 
+const EMPTY_STATE = {
+  period_start: "",
+  period_end: "",
+  days_elapsed: 0,
+  days_left: 0,
+  total_period_days: 0,
+  branches: [],
+};
+
 function SalesForecast() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     fetch(`${API_URL}api/forecast`)
       .then((res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
@@ -96,40 +99,40 @@ function SalesForecast() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="d-flex align-items-center gap-2 text-muted py-5">
-        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Loading forecast…
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return <div className="alert alert-danger" role="alert">{error || "Couldn't load forecast."}</div>;
-  }
-
   const criticalWarnings = data.branches.filter((b) => b.warning);
 
   return (
     <div>
+      {error && (
+        <div className="alert alert-danger d-flex justify-content-between align-items-center mb-3" role="alert">
+          <span>Couldn't load latest forecast data: {error}</span>
+          <button className="btn-close" onClick={() => setError(null)} aria-label="Close"></button>
+        </div>
+      )}
+
       <div className="mb-4">
         <h1 className="h4 mb-1">Sales Forecast</h1>
         <p className="text-muted small mb-0">
-          {data.period_start} to {data.period_end} · Day {data.days_elapsed} of {data.total_period_days} · {data.days_left} days left
+          {loading && data.branches.length === 0
+            ? "Loading…"
+            : `${data.period_start} to ${data.period_end} · Day ${data.days_elapsed} of ${data.total_period_days} · ${data.days_left} days left`}
         </p>
       </div>
 
       {criticalWarnings.length > 0 && (
         <div className="alert alert-warning mb-4">
-          <strong>{criticalWarnings.length} branch{criticalWarnings.length > 1 ? "es" : ""}</strong> need attention this month.
+          <strong>{criticalWarnings.length} branch{criticalWarnings.length > 1 ? "es" : ""}</strong> need attention this period.
         </div>
       )}
 
       <div className="row g-4">
-        {data.branches.map((b) => (
-          <BranchForecastCard key={b.branch_id} b={b} />
-        ))}
+        {data.branches.length === 0 ? (
+          <div className="col-12 text-muted text-center py-5 border rounded">
+            {loading ? "Loading forecast…" : "No forecast data available."}
+          </div>
+        ) : (
+          data.branches.map((b) => <BranchForecastCard key={b.branch_id} b={b} />)
+        )}
       </div>
     </div>
   );
