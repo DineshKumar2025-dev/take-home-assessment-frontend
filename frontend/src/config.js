@@ -1,1 +1,1 @@
-export const API_URL = 'take-home-assessment-backend.vercel.app/';
+export const API_URL = 'https://take-home-assessment-backend.vercel.app/';
