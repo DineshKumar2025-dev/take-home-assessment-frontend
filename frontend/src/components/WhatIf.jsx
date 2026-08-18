@@ -89,10 +89,8 @@ function WhatIf() {
       )}
 
       <div className="mb-4">
-        <div className="text-uppercase text-muted small fw-semibold" style={{ letterSpacing: "0.08em" }}>
-          Strategy Planning
-        </div>
-        <h1 className="fw-bold mb-1" style={{ fontSize: "2rem" }}>What-If Simulator</h1>
+        
+        <h4 className="h4 mb-1" style={{ fontSize: "2rem" }}>What-If Simulator</h4>
         <p className="text-muted mb-0">Move the sliders to model how funnel improvements ripple through to revenue.</p>
       </div>
 

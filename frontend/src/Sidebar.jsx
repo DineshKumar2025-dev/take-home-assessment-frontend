@@ -59,7 +59,7 @@ const menuItems = [
   },
   { 
     id: 8, 
-    label: "What If", 
+    label: "What If Simulator", 
     icon: FiZap, 
     href: "/what-if" 
   },
