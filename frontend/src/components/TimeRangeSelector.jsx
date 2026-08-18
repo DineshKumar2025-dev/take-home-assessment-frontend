@@ -2,13 +2,13 @@ const DEFAULT_OPTIONS = [
   { label: "All time", value: "all" },
   { label: "Q3 2025", value: "q3-2025" },
   { label: "Q4 2025", value: "q4-2025" },
-  { label: "Jun", value: "month-2025-06" },
-  { label: "Jul", value: "month-2025-07" },
-  { label: "Aug", value: "month-2025-08" },
-  { label: "Sep", value: "month-2025-09" },
-  { label: "Oct", value: "month-2025-10" },
-  { label: "Nov", value: "month-2025-11" },
-  { label: "Dec", value: "month-2025-12" },
+  { label: "Jun-2025", value: "month-2025-06" },
+  { label: "Jul-2025", value: "month-2025-07" },
+  { label: "Aug-2025", value: "month-2025-08" },
+  { label: "Sep-2025", value: "month-2025-09" },
+  { label: "Oct-2025", value: "month-2025-10" },
+  { label: "Nov-2025", value: "month-2025-11" },
+  { label: "Dec-2025", value: "month-2025-12" },
 ];
 
 function TimeRangeSelector({ value = "all", onChange, options = DEFAULT_OPTIONS }) {
@@ -23,8 +23,8 @@ function TimeRangeSelector({ value = "all", onChange, options = DEFAULT_OPTIONS 
             type="button"
             onClick={() => onChange(option.value)}
             className={[
-              "btn btn-sm rounded-pill border",
-              isSelected ? "btn-dark" : "btn-light text-dark",
+              
+              isSelected ? "btn-tab active" : "btn-tab",
             ].join(" ")}
           >
             {option.label}

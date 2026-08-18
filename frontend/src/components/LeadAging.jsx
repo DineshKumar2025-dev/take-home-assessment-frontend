@@ -6,6 +6,7 @@ import {
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
 import ExportButtons from "./ExportButtons";
+import LeadTabel from "./LeadTabel.jsx";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;
@@ -80,14 +81,9 @@ function LeadAging() {
         </div>
       )}
 
-      <div className="mb-4">
-        <h1 className="h4 mb-1">Lead Aging</h1>
-        <p className="text-muted small mb-0">
-          {loading ? "Loading…" : `${total_active_leads} active leads · ${stale_count} going cold (7+ days no activity)`}
-        </p>
-      </div>
+      
 
-      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
+      
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
         <div>
           <h1 className="h4 mb-1">Lead Aging</h1>
@@ -103,88 +99,63 @@ function LeadAging() {
           pdfTitle="Lead Aging Report"
         />
       </div>
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div ref={pdfRef}>
-      <div className="row g-4 mb-4">
-        <div className="col-lg-6">
-          <div className="border rounded p-4 bg-white h-100">
-            <h3 className="h6 mb-3">Leads by age</h3>
-            {buckets.length === 0 ? (
-              <div className="text-muted text-center py-5">{loading ? "Loading…" : "No active leads."}</div>
-            ) : (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={buckets}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="label" fontSize={12} />
-                  <YAxis fontSize={12} allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {buckets.map((b, i) => (
-                      <Cell key={i} fill={BUCKET_COLORS[b.label] || "#6c757d"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+        <div className="row g-4 mb-4">
+          <div className="col-lg-6">
+            <div className="border rounded p-4 bg-white h-100">
+              <h3 className="h6 mb-3">Leads by age</h3>
+              {buckets.length === 0 ? (
+                <div className="text-muted text-center py-5">{loading ? "Loading…" : "No active leads."}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={buckets}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="label" fontSize={12} />
+                    <YAxis fontSize={12} allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                      {buckets.map((b, i) => (
+                        <Cell key={i} fill={BUCKET_COLORS[b.label] || "#6c757d"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          <div className="col-lg-6">
+            <div className="border rounded p-4 bg-white h-100">
+              <h3 className="h6 mb-3">Stale leads by branch</h3>
+              {branch_breakdown.length === 0 ? (
+                <div className="text-muted text-center py-5">{loading ? "Loading…" : "No stale leads. 🎉"}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={branch_breakdown} layout="vertical" margin={{ left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" fontSize={12} allowDecimals={false} />
+                    <YAxis type="category" dataKey="branch_name" fontSize={12} width={100} />
+                    <Tooltip />
+                    <Bar dataKey="stale_count" fill="#dc3545" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="col-lg-6">
-          <div className="border rounded p-4 bg-white h-100">
-            <h3 className="h6 mb-3">Stale leads by branch</h3>
-            {branch_breakdown.length === 0 ? (
-              <div className="text-muted text-center py-5">{loading ? "Loading…" : "No stale leads. 🎉"}</div>
-            ) : (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={branch_breakdown} layout="vertical" margin={{ left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" fontSize={12} allowDecimals={false} />
-                  <YAxis type="category" dataKey="branch_name" fontSize={12} width={100} />
-                  <Tooltip />
-                  <Bar dataKey="stale_count" fill="#dc3545" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+        <div className="border rounded p-4 bg-white mb-4">
+          <h3 className="h6 mb-3">Cold leads — need follow-up</h3>
+          {staleLeadsList.length === 0 ? (
+            <div className="text-muted text-center py-4">{loading ? "Loading…" : "No cold leads right now."}</div>
+          ) : (
+            <div className="table-responsive">
+              
+              <LeadTabel selectedRange={selectedRange}/>
+            </div>
+          )}
         </div>
-      </div>
-
-      <div className="border rounded p-4 bg-white mb-4">
-        <h3 className="h6 mb-3">Cold leads — need follow-up</h3>
-        {staleLeadsList.length === 0 ? (
-          <div className="text-muted text-center py-4">{loading ? "Loading…" : "No cold leads right now."}</div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-sm table-hover align-middle mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>Customer</th><th>Branch</th><th>Rep</th><th>Model</th>
-                  <th>Last activity</th><th className="text-end">Deal value</th>
-                  <th className="text-end">Days stale</th>
-                </tr>
-              </thead>
-              <tbody>
-                {staleLeadsList.map((l) => (
-                  <tr key={l.lead_id}>
-                    <td>{l.customer_name}</td>
-                    <td className="text-muted">
-                      <Link to={`/branches/${l.branch_id}`} className="text-decoration-none">{l.branch_name}</Link>
-                    </td>
-                    <td className="text-muted">
-                      <Link to={`/sales-reps/${l.rep_id}`} className="text-decoration-none">{l.rep_name}</Link>
-                    </td>
-                    <td className="text-muted">{l.model_interested}</td>
-                    <td className="text-muted">{formatDate(l.last_activity_at)}</td>
-                    <td className="text-end">{formatInr(l.deal_value)}</td>
-                    <td className="text-end">
-                      <span className={`badge text-bg-${staleBadgeVariant(l.days_stale)}`}>{l.days_stale}d</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
     </div>
     </div>
   );

@@ -35,7 +35,8 @@ function SalesReps() {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
       })
-      .then((data) => setBranches(data.branches || []))
+      .then((data) => {
+        setBranches(data.branches || [])})
       .catch((err) => setError((prev) => prev || err.message));
   }, []);
 
@@ -50,7 +51,8 @@ function SalesReps() {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
       })
-      .then((data) => setReps(data.sales_reps || []))
+      .then((data) => 
+        {console.log(data);setReps(data.sales_reps || [])})
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [selectedBranch]);
@@ -103,8 +105,8 @@ function SalesReps() {
 
       <div ref={pdfRef}>
         <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-          <table className="table table-hover align-middle mb-0">
-            <thead className="table-light">
+          <table className="blue-table">
+            <thead className="">
               <tr>
                 <th>Rep</th>
                 <th>Branch</th>
@@ -130,7 +132,11 @@ function SalesReps() {
                       {r.name}
                     </Link>
                   </td>
-                  <td className="text-muted">{r.branch_name}</td>
+                  <td className="text-muted">
+                    <Link to={`/branches/${r.branch_id}`} className="text-decoration-none fw-medium">
+                      {r.branch_name}
+                    </Link>
+                  </td>
                   <td className="text-muted">{r.role}</td>
                   <td className="text-end">{r.total_leads}</td>
                   <td className="text-end">{r.delivered}</td>

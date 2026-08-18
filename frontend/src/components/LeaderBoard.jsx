@@ -105,12 +105,9 @@ function LeaderBoard() {
         </div>
       )}
 
-      <div className="mb-4">
-        <h1 className="h4 mb-1">Leaderboard</h1>
-        <p className="text-muted small mb-0">Ranked by revenue, Jun – Dec 2025</p>
-      </div>
+      
 
-      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
+      
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
         <div>
           <h1 className="h4 mb-1">Leaderboard</h1>
@@ -124,6 +121,7 @@ function LeaderBoard() {
           pdfTitle="Leaderboard"
         />
       </div>
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div ref={pdfRef}>
       <div className="row g-4 mb-4">
         <div className="col-lg-6">
@@ -170,11 +168,11 @@ function LeaderBoard() {
             </ResponsiveContainer>
 
             <div className="table-responsive mt-3">
-              <table className="table table-sm table-hover align-middle mb-0">
+              <table className="blue-table table-sm table-hover align-middle mb-0">
                 <thead className="table-light">
                   <tr>
-                    <th style={{ width: 60 }}>Rank</th><th>Branch</th><th>City</th>
-                    <th className="text-end">Revenue</th><th className="text-end">Attainment</th><th className="text-end">Conv %</th>
+                    <th >Rank</th><th>Branch</th><th>City</th>
+                    <th className="">Revenue</th><th className="">Attainment</th><th className="text-end">Conv %</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -183,8 +181,8 @@ function LeaderBoard() {
                       <td><RankMedal rank={b.rank} /></td>
                       <td><Link to={`/branches/${b.branch_id}`} className="text-decoration-none fw-medium">{b.name}</Link></td>
                       <td className="text-muted">{b.city}</td>
-                      <td className="text-end">{formatInr(b.revenue)}</td>
-                      <td className="text-end">{formatPct(b.attainment_pct)}</td>
+                      <td className="">{formatInr(b.revenue)}</td>
+                      <td className="">{formatPct(b.attainment_pct)}</td>
                       <td className="text-end">{formatPct(b.conversion_rate_pct)}</td>
                     </tr>
                   ))}

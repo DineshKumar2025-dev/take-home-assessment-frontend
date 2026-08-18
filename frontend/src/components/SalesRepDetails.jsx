@@ -95,7 +95,7 @@ export default function SalesRepDetails() {
       )}
 
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-        <button className="btn btn-link p-0" onClick={() => navigate(-1)}>← Back</button>
+        <button className="btn-nav" onClick={() => navigate(-1)}>← Back</button>
         <ExportButtons
           csvData={csvRows}
           csvFilename={`rep-${repId}-leads-${selectedRange}.csv`}
@@ -113,7 +113,7 @@ export default function SalesRepDetails() {
               <h2 className="h3 mb-0">{rep.name || (loading ? "Loading…" : "—")}</h2>
               <div className="text-muted">{rep.role} {rep.branch_name && `· ${rep.branch_name}, ${rep.city}`}</div>
             </div>
-            <Link to="/sales-reps" className="btn btn-outline-dark btn-sm">View all reps</Link>
+            <Link to="/sales-reps" className="btn-nav">View all reps</Link>
           </div>
 
           <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
@@ -149,8 +149,8 @@ export default function SalesRepDetails() {
         <div className="border rounded p-4 bg-white mb-4">
           <h3 className="h6 mb-3">Leads assigned</h3>
           <div className="table-responsive">
-            <table className="table table-sm table-hover align-middle mb-0">
-              <thead className="table-light">
+            <table className="blue-table">
+              <thead className="">
                 <tr>
                   <th>Customer</th><th>Model</th><th>Source</th><th>Status</th>
                   <th>Created</th><th>Last activity</th><th className="text-end">Deal value</th>

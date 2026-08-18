@@ -6,7 +6,7 @@ import {
 import { API_URL } from "../config.js";
 import TimeRangeSelector from "./TimeRangeSelector";
 import ExportButtons from "./ExportButtons";
-
+import LeadTabel from "./LeadTabel.jsx";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;
@@ -288,25 +288,7 @@ function OverView() {
             <div className="text-muted text-center py-4">{loading ? "Loading…" : "No stale leads. 🎉"}</div>
           ) : (
             <div className="table-responsive">
-              <table className="blue-table table-sm table-hover align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>Customer</th><th>Branch</th><th>Rep</th><th>Status</th>
-                    <th className="text-start">Days stale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stale_leads.map((l) => (
-                    <tr key={l.lead_id}>
-                      <td>{l.customer_name}</td>
-                      <td className="text-muted">{l.branch_name}</td>
-                      <td className="text-muted">{l.rep_name || "Unassigned"}</td>
-                      <td><span className="badge text-bg-secondary">{l.status}</span></td>
-                      <td className="ps-3 text-start text-danger fw-semibold">{l.days_stale}d</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <LeadTabel selectedRange={selectedRange}/>
             </div>
           )}
         </div>
