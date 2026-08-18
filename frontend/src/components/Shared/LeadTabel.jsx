@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { API_URL } from "../config.js";
+import { API_URL } from "../../config.js";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;

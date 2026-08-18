@@ -5,8 +5,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import TimeRangeSelector from "./TimeRangeSelector";
-import ExportButtons from "./ExportButtons";
+import TimeRangeSelector from "./Shared/TimeRangeSelector";
+import ExportButtons from "./Shared/ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";

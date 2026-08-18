@@ -1,5 +1,5 @@
-import { exportToCsv } from "../utilities/exportCsv";
-import { exportToPdf } from "../utilities/exportPdf";
+import { exportToCsv } from "../../utilities/exportCsv";
+import { exportToPdf } from "../../utilities/exportPdf";
 import { useEffect, useState } from "react";
 import { FaDownload } from "react-icons/fa";
 import { Tooltip } from "bootstrap";

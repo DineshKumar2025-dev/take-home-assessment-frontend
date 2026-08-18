@@ -5,8 +5,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from "recharts";
 import { API_URL } from "../config.js";
-import TimeRangeSelector from "./TimeRangeSelector";
-import ExportButtons from "./ExportButtons";
+import TimeRangeSelector from "./Shared/TimeRangeSelector";
+import ExportButtons from "./Shared/ExportButtons";
 function formatPct(value) {
   return value === null || value === undefined ? "—" : `${value.toFixed(0)}%`;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config.js";
-import ExportButtons from "./ExportButtons";
+import ExportButtons from "./Shared/ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";

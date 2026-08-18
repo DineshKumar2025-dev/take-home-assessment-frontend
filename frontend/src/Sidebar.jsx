@@ -65,7 +65,7 @@ const menuItems = [
   },
   { 
     id: 9, 
-    label: "Anomolies", 
+    label: "Anomalies", 
     icon: FiCompass, 
     href: "/anomaly-detection" 
   },

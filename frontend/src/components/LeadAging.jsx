@@ -4,9 +4,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
-import TimeRangeSelector from "./TimeRangeSelector";
-import ExportButtons from "./ExportButtons";
-import LeadTabel from "./LeadTabel.jsx";
+import TimeRangeSelector from "./Shared/TimeRangeSelector";
+import ExportButtons from "./Shared/ExportButtons";
+import LeadTabel from "./Shared/LeadTabel.jsx";
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config.js";
-
+import SummeryStrip from "./Shared/SummeryStrip";
 const METRIC_LABELS = {
   conversion_rate: "Conversion Rate",
   target_attainment: "Target Attainment",
   on_time_delivery_rate: "On-Time Delivery",
   rep_lost_rate: "Rep Lost-Lead Rate",
-  revenue_mom_drop: "Revenue Drop (MoM)",
+  revenue_month_outlier: "Revenue Outlier Month",
 };
 
 const METRIC_ICONS = {
@@ -15,7 +15,7 @@ const METRIC_ICONS = {
   target_attainment: "🎯",
   on_time_delivery_rate: "🚚",
   rep_lost_rate: "⚠️",
-  revenue_mom_drop: "📊",
+  revenue_month_outlier: "📊",
 };
 
 function SeverityBadge({ severity }) {
@@ -23,13 +23,13 @@ function SeverityBadge({ severity }) {
   return <span className={`badge text-bg-${variant} text-uppercase`}>{severity}</span>;
 }
 
-const EMPTY_STATE = { total_anomalies: 0, critical_count: 0, warning_count: 0, anomalies: [] };
+const EMPTY_STATE = { anomalies: [] };
 
 function AnomalyDetection() {
-  const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [data, setData] = useState(EMPTY_STATE);
 
   useEffect(() => {
     setLoading(true);
@@ -44,7 +44,7 @@ function AnomalyDetection() {
       .finally(() => setLoading(false));
   }, []);
 
-  const { total_anomalies, critical_count, warning_count, anomalies } = data;
+  const { anomalies } = data;
   const filtered = filter === "all" ? anomalies : anomalies.filter((a) => a.severity === filter);
 
   return (
@@ -61,49 +61,27 @@ function AnomalyDetection() {
         <p className="text-muted small mb-0">Branches and reps flagged as statistically off from their peers.</p>
       </div>
 
-      {/* Summary strip */}
-      <div className="row g-3 mb-4">
-        <div className="col-4">
-          <div className="border rounded p-3 bg-white text-center">
-            <div className="text-muted small">Total flags</div>
-            <div className="fs-4 fw-bold">{loading ? "…" : total_anomalies}</div>
-          </div>
-        </div>
-        <div className="col-4">
-          <div className="border rounded p-3 bg-white text-center border-danger">
-            <div className="text-muted small">Critical</div>
-            <div className="fs-4 fw-bold text-danger">{loading ? "…" : critical_count}</div>
-          </div>
-        </div>
-        <div className="col-4">
-          <div className="border rounded p-3 bg-white text-center border-warning">
-            <div className="text-muted small">Warning</div>
-            <div className="fs-4 fw-bold text-warning">{loading ? "…" : warning_count}</div>
-          </div>
-        </div>
-      </div>
+      <SummeryStrip />
 
-      {!loading && total_anomalies === 0 && (
+      {!loading && anomalies.length === 0 && (
         <div className="alert alert-success mb-4">No anomalies detected — all branches and reps are within normal range.</div>
       )}
 
-      {/* Filter pills */}
       <div className="d-flex gap-2 mb-3">
         {["all", "critical", "warning"].map((f) => (
           <button
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={` ${filter === f ? "btn-tab active" : "btn-tab "}`}
+            className={filter === f ? "btn-tab active" : "btn-tab"}
           >
             {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Anomaly cards */}
       <div className="row g-3">
-        {filtered.length === 0 && !loading && total_anomalies > 0 && (
+        {filtered.length === 0 && !loading && anomalies.length > 0 && (
           <div className="col-12 text-muted text-center py-4">No anomalies {filter}.</div>
         )}
         {loading && anomalies.length === 0 && (
@@ -123,7 +101,10 @@ function AnomalyDetection() {
                         <Link to={`/branches/${a.branch_id}`} className="text-decoration-none text-dark">{a.branch_name}</Link>
                       )}
                     </div>
-                    <div className="text-muted small">{METRIC_LABELS[a.metric] || a.metric}</div>
+                    <div className="text-muted small">
+                      {METRIC_LABELS[a.metric] || a.metric}
+                      {a.month && ` · ${a.month}`}
+                    </div>
                   </div>
                 </div>
                 <SeverityBadge severity={a.severity} />

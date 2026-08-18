@@ -4,8 +4,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { API_URL } from "../config.js";
-import TimeRangeSelector from "./TimeRangeSelector";
-import ExportButtons from "./ExportButtons";
+import TimeRangeSelector from "./Shared/TimeRangeSelector";
+import ExportButtons from "./Shared/ExportButtons";
 
 function formatInr(value) {
   if (value === null || value === undefined) return "—";

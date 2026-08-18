@@ -4,9 +4,10 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend, ComposedChart,
 } from "recharts";
 import { API_URL } from "../config.js";
-import TimeRangeSelector from "./TimeRangeSelector";
-import ExportButtons from "./ExportButtons";
-import LeadTabel from "./LeadTabel.jsx";
+import TimeRangeSelector from "./Shared/TimeRangeSelector";
+import ExportButtons from "./Shared/ExportButtons";
+import LeadTabel from "./Shared/LeadTabel.jsx";
+import SummeryStrip from './Shared/SummeryStrip.jsx'
 function formatInr(value) {
   if (value === null || value === undefined) return "—";
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)}Cr`;
@@ -75,6 +76,7 @@ const EMPTY_STATE = {
 };
 
 function OverView() {
+  // const EMPTY_ELIMONY = { total_anomalies: 0, critical_count: 0, warning_count: 0, anomalies: [] };
   const [data, setData] = useState(EMPTY_STATE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -176,6 +178,8 @@ function OverView() {
             variant={dec_target_gap.revenue_gap > 0 ? "danger" : "success"}
             loading={loading}
           />
+          <p className="fw-bold">Total Anomalies flaged</p>
+          <SummeryStrip/>
         </div>
 
         {/* Insight strip */}
@@ -259,7 +263,26 @@ function OverView() {
               )}
             </div>
           </div>
-
+          {/* <div className="row g-3 mb-4">
+            <div className="col-4">
+              <div className="border rounded p-3 bg-white text-center">
+                <div className="text-muted small">Total flags</div>
+                <div className="fs-4 fw-bold">{loading ? "…" : total_anomalies}</div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="border rounded p-3 bg-white text-center border-danger">
+                <div className="text-muted small">Critical</div>
+                <div className="fs-4 fw-bold text-danger">{loading ? "…" : critical_count}</div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="border rounded p-3 bg-white text-center border-warning">
+                <div className="text-muted small">Warning</div>
+                <div className="fs-4 fw-bold text-warning">{loading ? "…" : warning_count}</div>
+              </div>
+            </div>
+          </div> */}
           {/* Lost reasons */}
           <div className="col-lg-6">
             <div className="border rounded p-4 bg-white h-100">
