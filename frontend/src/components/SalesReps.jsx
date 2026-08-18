@@ -141,7 +141,7 @@ function SalesReps() {
                   <td className="text-end">{r.total_leads}</td>
                   <td className="text-end">{r.delivered}</td>
                   <td className="text-end">{formatInr(r.revenue)}</td>
-                  <td className="text-start"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
+                  <td className="text-end"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
                 </tr>
               ))}
             </tbody>

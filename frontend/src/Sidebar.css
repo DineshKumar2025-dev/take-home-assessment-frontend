@@ -346,62 +346,168 @@
 /* =========================
    Responsive — sidebar becomes a horizontal top bar
 ========================= */
+/* =========================
+   Mobile — Top Navigation
+========================= */
 
 @media (max-width: 480px) {
-  .app-shell {
+
+  .app-shell,
+  .app-shell.collapsed {
+    --sidebar-width: 0px;
     display: flex;
     flex-direction: column;
   }
 
-  .sidebar {
+  /* Sidebar becomes normal top section */
+  .sidebar,
+  .sidebar.collapsed {
     width: 100%;
     height: auto;
+    min-height: auto;
     position: relative;
-    flex-direction: row;
+    left: auto;
+    top: auto;
+
+    display: flex;
+    flex-direction: column;
+
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .sidebar.collapsed {
-    width: 100%;
-  }
+  /* =========================
+     Company Header
+  ========================= */
 
   .sidebar-header {
+    width: 100%;
     height: 60px;
-    flex-shrink: 0;
+    min-height: 60px;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .sidebar-nav {
-    flex-direction: row;
-    padding: 8px;
-    gap: 4px;
-    overflow-x: auto;
-    overflow-y: visible;
+  .logo-container {
+    width: 100%;
+    justify-content: center;
   }
 
+  .logo {
+    margin: 0;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  /* Hide arrow completely */
+  .toggle-btn {
+    display: none;
+  }
+
+  /* =========================
+     Navigation Row
+  ========================= */
+
+  .sidebar-nav,
   .sidebar.collapsed .sidebar-nav {
-    align-items: stretch;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 6px;
+
+    padding: 8px 10px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    flex: none;
+
+    scrollbar-width: none;
   }
 
-  .nav-link-item {
-    height: 40px;
+  /* Chrome / Edge / Safari */
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* =========================
+     Navigation Items
+  ========================= */
+
+  .nav-link-item,
+  .sidebar.collapsed .nav-link-item {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+
+    padding: 0;
+
     flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0;
+
+    border-radius: 10px;
   }
 
-  .nav-link-item.active::before {
+  .nav-icon {
+    width: 44px;
+    min-width: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+  }
+
+  /* Hide names on mobile */
+  .nav-label {
+    display: none;
+  }
+
+  /* =========================
+     Active Indicator
+  ========================= */
+
+  .nav-link-item.active::before,
+  .sidebar.collapsed .nav-link-item.active::before {
     left: 50%;
     top: auto;
-    bottom: -2px;
+    bottom: -1px;
+
     width: 22px;
     height: 3px;
+
     transform: translateX(-50%);
+
     border-radius: 4px 4px 0 0;
   }
 
-  .sidebar.collapsed .nav-link-item.active::before {
-    left: 50%;
-  }
+  /* =========================
+     Footer
+  ========================= */
 
   .sidebar-footer {
     display: none;
+  }
+
+  /* Main content */
+  .main-content {
+    margin-left: 0;
+    padding: 14px;
   }
 }

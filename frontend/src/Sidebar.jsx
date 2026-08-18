@@ -99,86 +99,55 @@ export default function Sidebar({
     >
 
       {/* Header */}
-      <div className="sidebar-header">
-
-        <div className="logo-container">
-          {!isCollapsed && (
+        <div className="sidebar-header">
+          <div className="logo-container">
             <h2 className="logo">
               Dealership
             </h2>
-          )}
+          </div>
+
+          {/* Hide toggle on mobile using CSS */}
+          <button
+            type="button"
+            className="toggle-btn"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!isCollapsed}
+          >
+            {isCollapsed ? "→" : "←"}
+          </button>
         </div>
 
-        <button
-          type="button"
-          className="toggle-btn"
-          onClick={() =>
-            setIsCollapsed(!isCollapsed)
-          }
-          aria-label={
-            isCollapsed
-              ? "Expand sidebar"
-              : "Collapse sidebar"
-          }
-          aria-expanded={!isCollapsed}
-        >
-          {isCollapsed ? "→" : "←"}
-        </button>
-
-      </div>
-
       {/* Navigation */}
-      <nav className="sidebar-nav">
+  <nav className="sidebar-nav">
+  {menuItems.map((item) => {
+    const Icon = item.icon;
 
-        {menuItems.map((item) => {
-          const Icon = item.icon;
+    return (
+      <NavLink
+        key={item.id}
+        to={item.href}
+        end={item.href === "/"}
+        data-bs-toggle={isCollapsed ? "tooltip" : undefined}
+        data-bs-placement="bottom"
+        title={isCollapsed ? item.label : undefined}
+        className={({ isActive }) =>
+          `nav-link-item ${isActive ? "active" : ""}`
+        }
+      >
+        <span className="nav-icon">
+          <Icon size={20} strokeWidth={2} />
+        </span>
 
-          return (
-            <NavLink
-              key={item.id}
-              to={item.href}
-              end={item.href === "/"}
-
-              /* Bootstrap tooltip */
-              data-bs-toggle={
-                isCollapsed
-                  ? "tooltip"
-                  : undefined
-              }
-
-              data-bs-placement="right"
-
-              title={
-                isCollapsed
-                  ? item.label
-                  : undefined
-              }
-
-              className={({ isActive }) =>
-                `nav-link-item ${
-                  isActive ? "active" : ""
-                }`
-              }
-            >
-
-              <span className="nav-icon">
-                <Icon
-                  size={20}
-                  strokeWidth={2}
-                />
-              </span>
-
-              {!isCollapsed && (
-                <span className="nav-label">
-                  {item.label}
-                </span>
-              )}
-
-            </NavLink>
-          );
-        })}
-
-      </nav>
+        {!isCollapsed && (
+          <span className="nav-label">
+            {item.label}
+          </span>
+        )}
+      </NavLink>
+    );
+  })}
+</nav>
 
     </aside>
   );

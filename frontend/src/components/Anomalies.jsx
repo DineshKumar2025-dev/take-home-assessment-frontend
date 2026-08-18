@@ -84,7 +84,7 @@ function AnomalyDetection() {
       </div>
 
       {!loading && total_anomalies === 0 && (
-        <div className="alert alert-success mb-4">✅ No anomalies detected — all branches and reps are within normal range.</div>
+        <div className="alert alert-success mb-4">No anomalies detected — all branches and reps are within normal range.</div>
       )}
 
       {/* Filter pills */}
@@ -94,7 +94,7 @@ function AnomalyDetection() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`btn btn-sm rounded-pill border ${filter === f ? "btn-dark" : "btn-light text-dark"}`}
+            className={` ${filter === f ? "btn-tab active" : "btn-tab "}`}
           >
             {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
@@ -104,7 +104,7 @@ function AnomalyDetection() {
       {/* Anomaly cards */}
       <div className="row g-3">
         {filtered.length === 0 && !loading && total_anomalies > 0 && (
-          <div className="col-12 text-muted text-center py-4">No anomalies match this filter.</div>
+          <div className="col-12 text-muted text-center py-4">No anomalies {filter}.</div>
         )}
         {loading && anomalies.length === 0 && (
           <div className="col-12 text-muted text-center py-5">Loading…</div>
