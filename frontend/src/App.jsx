@@ -10,8 +10,9 @@ import SalesRepDetails from "./components/SalesRepDetails";
 import SalesForecast from "./components/SalesForcast";
 import LeaderBoard from "./components/LeaderBoard";
 import DeliveryDelay from "./components/DeliveryDelay";
+import WhatIf from "./components/WhatIf";
 import "./App.css";
-
+import AnomalyDetection from './components/Anomalies'
 export default function App() {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,9 +34,10 @@ export default function App() {
           <Route path="/lead-aging" element={<LeadAging />} />
           <Route path="/sales-forecast" element={<SalesForecast />} />
           <Route path="/leader-board" element={<LeaderBoard />} />
-          
+          <Route path='/what-if' element={<WhatIf/>}/>
           <Route path="/deliveries" element={<DeliveryDelay />} />
           <Route path="/lead-aging" element={<LeadAging />} />
+          <Route path="/anomaly-detection" element={<AnomalyDetection/>}/>
         </Routes>
       </main>
     </div>

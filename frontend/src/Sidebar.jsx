@@ -8,6 +8,8 @@ import {
   FiAward,
   FiTruck,
   FiClock,
+  FiCompass,
+  FiZap
 } from "react-icons/fi";
 import { useEffect } from "react";
 import { Tooltip } from "bootstrap";
@@ -54,6 +56,18 @@ const menuItems = [
     label: "Lead Aging",
     icon: FiClock,
     href: "/lead-aging",
+  },
+  { 
+    id: 8, 
+    label: "What If", 
+    icon: FiZap, 
+    href: "/what-if" 
+  },
+  { 
+    id: 9, 
+    label: "Anomolies", 
+    icon: FiZap, 
+    href: "/anomaly-detection" 
   },
 ];
 
