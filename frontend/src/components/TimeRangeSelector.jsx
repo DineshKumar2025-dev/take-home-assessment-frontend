@@ -23,8 +23,8 @@ function TimeRangeSelector({ value = "all", onChange, options = DEFAULT_OPTIONS 
             type="button"
             onClick={() => onChange(option.value)}
             className={[
-              "btn btn-sm rounded-pill border",
-              isSelected ? "btn-dark" : "btn-light text-dark",
+              
+              isSelected ? "btn-tab active" : "btn-tab",
             ].join(" ")}
           >
             {option.label}

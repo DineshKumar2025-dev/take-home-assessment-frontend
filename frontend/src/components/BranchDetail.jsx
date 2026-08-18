@@ -74,7 +74,7 @@ export default function BranchDetail() {
       )}
 
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-        <button className="btn btn-link p-0" onClick={() => navigate(-1)}>← Back</button>
+        <button className="btn-nav" onClick={() => navigate(-1)}>← Back</button>
         <ExportButtons
           csvData={csvRows}
           csvFilename={`branch-${branchId}-reps-${selectedRange}.csv`}
@@ -92,7 +92,7 @@ export default function BranchDetail() {
               <h2 className="h3 mb-0">{branch.name || (loading ? "Loading…" : "—")}</h2>
               <div className="text-muted">{branch.city || ""}</div>
             </div>
-            <Link to="/branches" className="btn btn-outline-dark btn-sm">View all branches</Link>
+            <Link to="/branches" className="btn-nav">View all branches</Link>
           </div>
           <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
           <div className="d-flex flex-row gap-3 flex-wrap">
@@ -108,7 +108,7 @@ export default function BranchDetail() {
         <div className="border rounded p-4 bg-white mb-4">
           <h3 className="h6 mb-3">Sales reps</h3>
           <div className="table-responsive">
-            <table className="table table-sm table-hover align-middle mb-0">
+            <table className="blue-table table-sm table-hover align-middle mb-0">
               <thead className="table-light">
                 <tr>
                   <th>Name</th><th>Role</th>
