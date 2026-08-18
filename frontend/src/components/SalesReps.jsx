@@ -103,16 +103,16 @@ function SalesReps() {
 
       <div ref={pdfRef}>
         <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-          <table className="blue-table table-hover align-middle mb-0">
+          <table className="table table-hover align-middle mb-0">
             <thead className="table-light">
               <tr>
                 <th>Rep</th>
                 <th>Branch</th>
                 <th>Role</th>
-                <th className="">Leads</th>
-                <th className="">Delivered</th>
-                <th className="">Revenue</th>
-                <th className="text-center">Conv %</th>
+                <th className="text-end">Leads</th>
+                <th className="text-end">Delivered</th>
+                <th className="text-end">Revenue</th>
+                <th className="text-end">Conv %</th>
               </tr>
             </thead>
             <tbody>
@@ -132,10 +132,10 @@ function SalesReps() {
                   </td>
                   <td className="text-muted">{r.branch_name}</td>
                   <td className="text-muted">{r.role}</td>
-                  <td className="">{r.total_leads}</td>
-                  <td className="">{r.delivered}</td>
-                  <td className="">{formatInr(r.revenue)}</td>
-                  <td className="text-center"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
+                  <td className="text-end">{r.total_leads}</td>
+                  <td className="text-end">{r.delivered}</td>
+                  <td className="text-end">{formatInr(r.revenue)}</td>
+                  <td className="text-start"><AttainmentBadge pct={r.conversion_rate_pct} /></td>
                 </tr>
               ))}
             </tbody>

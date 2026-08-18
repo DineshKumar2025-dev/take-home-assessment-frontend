@@ -90,7 +90,7 @@ function Branches() {
 
       <div ref={pdfRef}>
         <div className="table-responsive border rounded" style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-          <table className="blue-table table-hover align-middle mb-0">
+          <table className="table table-hover align-middle mb-0">
             <thead className="table-light">
               <tr>
                 <th>Branch</th>

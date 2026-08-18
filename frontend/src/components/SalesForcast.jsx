@@ -128,9 +128,16 @@ function SalesForecast() {
         </div>
       )}
 
-     
+      <div className="mb-4">
+        <h1 className="h4 mb-1">Sales Forecast</h1>
+        <p className="text-muted small mb-0">
+          {loading && data.branches.length === 0
+            ? "Loading…"
+            : `${data.period_start} to ${data.period_end} · Day ${data.days_elapsed} of ${data.total_period_days} · ${data.days_left} days left`}
+        </p>
+      </div>
 
-      
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
         <div>
           <h1 className="h4 mb-1">Sales Forecast</h1>
@@ -148,7 +155,6 @@ function SalesForecast() {
           pdfTitle="Sales Forecast"
         />
       </div>
-      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div ref={pdfRef}>
       {criticalWarnings.length > 0 && (
         <div className="alert alert-warning mb-4">

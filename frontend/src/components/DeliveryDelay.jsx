@@ -89,9 +89,14 @@ function DeliveryDelay() {
         </div>
       )}
 
-      
+      <div className="mb-4">
+        <h1 className="h4 mb-1">Delivery &amp; Delay</h1>
+        <p className="text-muted small mb-0">
+          {loading ? "Loading…" : `On-time performance across ${summary.total_deliveries} deliveries`}
+        </p>
+      </div>
 
-      
+      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
         <div>
           <h1 className="h4 mb-1">Delivery &amp; Delay</h1>
@@ -107,7 +112,6 @@ function DeliveryDelay() {
           pdfTitle="Delivery & Delay Report"
         />
       </div>
-      <TimeRangeSelector value={selectedRange} onChange={setSelectedRange} />
       <div ref={pdfRef}>
       <div className="row g-3 mb-4">
         <StatCard
@@ -184,15 +188,15 @@ function DeliveryDelay() {
             </ResponsiveContainer>
 
             <div className="table-responsive mt-3">
-              <table className="blue-table table-sm table-hover align-middle mb-0">
+              <table className="table table-sm table-hover align-middle mb-0">
                 <thead className="table-light">
                   <tr>
                     <th>Branch</th><th>City</th>
-                    <th className="">Deliveries</th>
-                    <th className="">On time</th>
-                    <th className="">Late</th>
-                    <th className="">On-time %</th>
-                    <th className="">Avg days</th>
+                    <th className="text-end">Deliveries</th>
+                    <th className="text-end">On time</th>
+                    <th className="text-end">Late</th>
+                    <th className="text-end">On-time %</th>
+                    <th className="text-end">Avg days</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -200,11 +204,11 @@ function DeliveryDelay() {
                     <tr key={b.branch_id}>
                       <td><Link to={`/branches/${b.branch_id}`} className="text-decoration-none fw-medium">{b.name}</Link></td>
                       <td className="text-muted">{b.city}</td>
-                      <td className="">{b.total_deliveries}</td>
-                      <td className=" text-success">{b.on_time}</td>
-                      <td className=" text-danger">{b.late}</td>
-                      <td className="">{formatPct(b.on_time_pct)}</td>
-                      <td className="">{b.avg_days_to_deliver !== null ? `${b.avg_days_to_deliver}d` : "—"}</td>
+                      <td className="text-end">{b.total_deliveries}</td>
+                      <td className="text-end text-success">{b.on_time}</td>
+                      <td className="text-end text-danger">{b.late}</td>
+                      <td className="text-end">{formatPct(b.on_time_pct)}</td>
+                      <td className="text-end">{b.avg_days_to_deliver !== null ? `${b.avg_days_to_deliver}d` : "—"}</td>
                     </tr>
                   ))}
                 </tbody>

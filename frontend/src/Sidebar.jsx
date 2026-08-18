@@ -9,8 +9,6 @@ import {
   FiTruck,
   FiClock,
 } from "react-icons/fi";
-import { useEffect } from "react";
-import { Tooltip } from "bootstrap";
 
 const menuItems = [
   {
@@ -57,50 +55,24 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar({
-  isCollapsed,
-  setIsCollapsed,
-}) {
-
-  // Initialize Bootstrap tooltips
-  useEffect(() => {
-    const tooltipElements = document.querySelectorAll(
-      '[data-bs-toggle="tooltip"]'
-    );
-
-    const tooltips = [...tooltipElements].map(
-      (element) => new Tooltip(element)
-    );
-
-    return () => {
-      tooltips.forEach((tooltip) => tooltip.dispose());
-    };
-  }, [isCollapsed]);
-
+export default function Sidebar({ isCollapsed, setIsCollapsed }) {
   return (
-    <aside
-      className={`sidebar ${
-        isCollapsed ? "collapsed" : ""
-      }`}
-    >
-
+    <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      
       {/* Header */}
       <div className="sidebar-header">
-
         <div className="logo-container">
           {!isCollapsed && (
-            <h2 className="logo">
-              Dealership
-            </h2>
+            <h2 className="logo">Dealership</h2>
           )}
+
+          
         </div>
 
         <button
           type="button"
           className="toggle-btn"
-          onClick={() =>
-            setIsCollapsed(!isCollapsed)
-          }
+          onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={
             isCollapsed
               ? "Expand sidebar"
@@ -110,12 +82,10 @@ export default function Sidebar({
         >
           {isCollapsed ? "→" : "←"}
         </button>
-
       </div>
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-
         {menuItems.map((item) => {
           const Icon = item.icon;
 
@@ -124,34 +94,13 @@ export default function Sidebar({
               key={item.id}
               to={item.href}
               end={item.href === "/"}
-
-              /* Bootstrap tooltip */
-              data-bs-toggle={
-                isCollapsed
-                  ? "tooltip"
-                  : undefined
-              }
-
-              data-bs-placement="right"
-
-              title={
-                isCollapsed
-                  ? item.label
-                  : undefined
-              }
-
+              title={isCollapsed ? item.label : undefined}
               className={({ isActive }) =>
-                `nav-link-item ${
-                  isActive ? "active" : ""
-                }`
+                `nav-link-item ${isActive ? "active" : ""}`
               }
             >
-
               <span className="nav-icon">
-                <Icon
-                  size={20}
-                  strokeWidth={2}
-                />
+                <Icon size={20} strokeWidth={2} />
               </span>
 
               {!isCollapsed && (
@@ -159,13 +108,10 @@ export default function Sidebar({
                   {item.label}
                 </span>
               )}
-
             </NavLink>
           );
         })}
-
       </nav>
-
     </aside>
   );
 }
